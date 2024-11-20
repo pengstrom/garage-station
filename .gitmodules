@@ -1,0 +1,3 @@
+[submodule "lib/sx1278"]
+	path = lib/sx1278
+	url = git@github.com:pengstrom/esp32-sx1278.git
