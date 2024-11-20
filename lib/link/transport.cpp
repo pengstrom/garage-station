@@ -49,7 +49,6 @@ Transport::Transport(Sx1278::config_t cfg) : _cfg(cfg)
   _lora->writeCfg3(cfg_3);
 
   _lora->registerDio0Callback(rx_task, this);
-  _lora->setDio0Mapping(Sx1278::dio0_t::RX_DONE);
 
   _lora->setMode(Sx1278::mode_t::RX_CONT);
 }
@@ -74,7 +73,7 @@ void Transport::packetHandler()
   printf("[Transport] Handling package\n");
   printf("  [SEQ]    %u\n", seq);
   printf("  [LENGTH] %u\n", len);
-  printf("  [CMD]    %u\n", cmd);
+  printf("  [CMD]    %u\n", static_cast<uint8_t>(cmd));
 
   // if ack for awaited command
   // continue logic

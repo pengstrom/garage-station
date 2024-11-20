@@ -15,3 +15,4 @@ constexpr Sx1278::config_t SX1278_CONFIG = {
 
 const int BACKOFF_START_TIME_MS = 10;
 const int BACKOFF_FACTOR = 2;
+const int BACKOFF_TIMEOUT_MS = 10000;
