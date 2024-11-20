@@ -66,7 +66,7 @@ void Transport::send(packet_t pkt)
 void Transport::packetHandler()
 {
   packet_t *pkt;
-  xQueueReceive(_packet_queue, pkt, portMAX_DELAY); // Just stall an wait for item
+  xQueueReceive(_packet_queue, &pkt, portMAX_DELAY); // Just stall an wait for item
 
   uint8_t seq = pkt->seq;
   command_t cmd = pkt->cmd;
