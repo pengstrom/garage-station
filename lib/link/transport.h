@@ -113,8 +113,8 @@ private:
   Sx1278::config_t _cfg;
   QueueHandle_t _packet_queue;
 
-  static void rx_task(void *arg);
-  void handleRx();
+  static void rx_task(void *arg, uint8_t *buffer, size_t size);
+  void handleRx(uint8_t *buffer, size_t size);
 
   static void packet_task(void *self);
   void packetHandler();

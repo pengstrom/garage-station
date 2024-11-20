@@ -5,7 +5,6 @@ constexpr Sx1278::config_t SX1278_CONFIG = {
     .rst_pin = GPIO_NUM_16,
     .spi = {
         .host = SPI2_HOST,
-        // .clock_freq = Sx1278::CLOCK_MAX_FREQ,
         .clock_freq = 9 * 1000 * 1000,
         .mosi_pin = GPIO_NUM_13,
         .miso_pin = GPIO_NUM_12,
@@ -13,3 +12,6 @@ constexpr Sx1278::config_t SX1278_CONFIG = {
         .sck_pin = GPIO_NUM_14,
     },
 };
+
+const int BACKOFF_START_TIME_MS = 10;
+const int BACKOFF_FACTOR = 2;

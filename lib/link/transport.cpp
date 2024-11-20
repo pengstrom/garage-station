@@ -66,10 +66,15 @@ void Transport::send(packet_t pkt)
 void Transport::packetHandler()
 {
   packet_t *pkt;
-  xQueueReceive(_packet_queue, &pkt, portMAX_DELAY); // Just stall an wait for item
+  xQueueReceive(_packet_queue, &pkt, portMAX_DELAY); // Just stall and wait for item
 
   uint8_t seq = pkt->seq;
   command_t cmd = pkt->cmd;
+  uint8_t len = pkt->len;
+  printf("[Transport] Handling package\n");
+  printf("  [SEQ]    %u\n", seq);
+  printf("  [LENGTH] %u\n", len);
+  printf("  [CMD]    %u\n", cmd);
 
   // if ack for awaited command
   // continue logic
@@ -83,38 +88,29 @@ void Transport::packetHandler()
   delete pkt;
 }
 
-void Transport::rx_task(void *arg)
+void Transport::rx_task(void *arg, uint8_t *buffer, size_t size)
 {
+  printf("[Transport] RX data recived (%u bytes)\n", size);
   Transport *self = static_cast<Transport *>(arg);
-  self->handleRx();
+  self->handleRx(buffer, size);
 }
 
-void Transport::handleRx()
+void Transport::handleRx(uint8_t *payload, size_t payload_size)
 {
-  Sx1278::reg_irq_flags_t flags = _lora->readIrqFlags();
-  if (flags.rx_done && flags.valid_header && !flags.payload_crc_error)
+  if (payload_size != PACKET_SIZE)
   {
-    uint8_t payload_size = _lora->rxSize();
-    if (payload_size != PACKET_SIZE)
-    {
-      _lora->resetRx();
-      return;
-    }
-
-    uint8_t buffer[PACKET_SIZE];
-    _lora->readRx(buffer);
-    packet_t *msg = new packet_t(buffer); // deleted in packet handler
-
-    BaseType_t woken;
-    // Drop packet in case of queue full
-    xQueueSendToBackFromISR(_packet_queue, msg, &woken);
-    if (woken == pdTRUE)
-    {
-      taskYIELD();
-    }
+    return;
   }
 
-  _lora->resetRx();
+  packet_t *msg = new packet_t(payload); // deleted in packet handler
+
+  BaseType_t woken;
+  // Drop packet in case of queue full
+  xQueueSendToBackFromISR(_packet_queue, msg, &woken);
+  if (woken == pdTRUE)
+  {
+    taskYIELD();
+  }
 }
 
 void Transport::packet_task(void *arg)
